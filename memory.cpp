@@ -1,107 +1,87 @@
-# include <iostream>
-# include <string>
+#include <iostream>
+#include <string>
 #include <array>
 #include <cctype>
 
-
 using namespace std;
-class memory{
-    public:
+
+class Memory {
+public:
     static const int size = 256;
-    array <string,size> mem;
-    bool flag = true;
+    array<string, size> mem;
 
-    memory()
-    {
-    for (int i = 0; i < size; i++){
-        mem[i] = "xy";
-    }
-    }
-    
-    
-
-    string getcell(int address)
-    {
-        if (address >= 0 && address < 256){
-            return mem[address];
+    Memory() {
+        for (int i = 0; i < size; i++) {
+            mem[i] = "xy";  // Initialize memory cells to "xy"
         }
-        else{
+    }
+
+    string getcell(int address) {
+        if (address < 0 || address >= size) {  // Corrected bounds check
             cout << "Out of bounds. ";
+            return "00";  // Return a default value for out of bounds
+        } else {
+            return mem[address];
         } 
     }
 
-/*    bool hexa(const string &value){
-
-        for (int i = 0; i < value.size(); i++){
-
-            if (value [i] > 0 && value [i] < 9 || value [i] == 'A' || value [i]  =='a' ||value [i] =='b'
-            || value [i] == 'B'|| value [i] == 'C' || value [i] == 'D' || value [i] == 'c' || value [i] == 'd'
-            || value [i] == 'E'|| value [i] == 'F'|| value [i] == 'e'|| value [i] == 'f');{
-            return false;
-            }
-
-        }
-
-    }
-*/
-
-    void setcell (int address, const string& value)
-    {
+    void setcell(int address, const string& value) {
+        bool flag = true;  // Reset flag for each call
         
-        
-           for (int i = 0; i < value.size(); i++){
-
-                if (value [i] < 0 && value [i] > 9 || value [i] != 'A' || value [i]  !='a' ||value [i] != 'b'
-                || value [i] != 'B'|| value [i] != 'C' || value [i] != 'D' || value [i] != 'c' || value [i] != 'd'
-                || value [i] != 'E'|| value [i] != 'F'|| value [i] != 'e'|| value [i] != 'f');
+        // Validate hex input
+        for (char c : value) {
+            if (!isxdigit(c)) {  // Check if character is not a valid hex digit
                 flag = false;
                 break;
-
             }
-
-        if (value.size() == 2 && !flag ) {
-
-            mem[address] = value; 
         }
-        
 
+        // Store valid two-character hex value
+        if (value.size() == 2 && flag) {
+            if (address >= 0 && address < size) {
+                mem[address] = value; 
+            } else {
+                cout << "Address out of bounds." << endl;
+            }
+            return;
+        }
+
+        // Handle values longer than 2 characters
         if (value.length() > 2) {
-                
-        for (size_t i = 0; i < value.length(); i += 2) {
-            if (i + 1 < value.length()) {
-                string pair = value.substr(i, 2);
+            for (size_t i = 0; i < value.length(); i += 2) {
+                if (i + 1 < value.length()) {
+                    string pair = value.substr(i, 2);
+                    if (address >= 0 && address < size) {
+                        mem[address++] = pair;  // Store the pair in memory
+                    } else {
+                        cout << "Out of bounds for address." << endl;
+                        return;
+                    }
+                }
             }
+            // Handle any remaining single character
+            if (value.length() % 2 != 0 && address < size) {
+                string remaining(1, value.back());
+                mem[address++] = remaining;  // Store remaining character
+            }
+        } else if (!flag) {
+            cout << "Invalid hex input." << endl;
         }
-
-        if (value.length() % 2 != 0 && address < size) {
-            string remaining(1, value.back());  // Last character
-            mem[address++] = remaining;
-        }
-        }
-        if (flag){
-            cout << "invalid hexa input. "<<endl;
-        }
-
-        
-
     }
-
-    int main(){
-        memory m;
-        m.setcell(0,"aa");
-        cout << m.getcell(0) << endl;
-        m.setcell(200,"abc");
-        cout << m.getcell(200)<<endl;
-        m.setcell(300,"ll");
-        cout << m.getcell(300)<<endl;
-        m.setcell(100,"2ab4");
-        cout << m.getcell(100);
-        return 0;
-
-    }
-
-    
-
-
-
 };
+
+int main() {
+    Memory m;
+    m.setcell(0, "aa");
+    cout << m.getcell(0) << endl;  
+    m.setcell(200, "abc");
+    cout << m.getcell(200) << endl;  
+    cout << m.getcell(201) << endl;  
+    m.setcell(150, "bb");
+    cout << m.getcell(300) << endl;  
+    m.setcell(100, "2ab4");
+    cout << m.getcell(100) << endl;  
+    cout << m.getcell(101) << endl;  
+
+    return 0;
+}
