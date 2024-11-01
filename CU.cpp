@@ -175,7 +175,7 @@ class CU{
         }
 
         else if (reg.getcell(regIndex) != reg.getcell(0)){
-            cout << "No jumb. ";
+            ++PC;
         }
     }
 
