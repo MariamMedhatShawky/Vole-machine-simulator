@@ -149,10 +149,19 @@ class CU{
     }
 
 
-    void store (int Regp, int Memp, Register & r, Memory &m){
+    void store(int Regp, int Memp, Register& r, Memory& m) {
+    // Retrieve the value from the register and store it in the memory address specified by Memp
         
-        m.setcell(Memp,r.getcell(Regp));
+    if (Memp == 0) {
+        // If Memp is 0, store register value at memory address 0
+        cout << r.getcell(Regp) << endl;
+        m.setcell(0, r.getcell(Regp));
+    } 
+    else {
+        // Otherwise, store the register value at the specified memory address Memp
+        m.setcell(Memp, r.getcell(Regp));
     }
+}
 
     void move (int Regp1, int Regp2, Register & reg){
         reg.setcell(Regp2, reg.getcell(Regp1));
@@ -175,7 +184,7 @@ class CU{
         }
 
         else if (reg.getcell(regIndex) != reg.getcell(0)){
-            ++PC;
+            PC+=2;
         }
     }
 
@@ -217,7 +226,10 @@ int main() {
     reg.setcell(5, "4C"); 
     cu.store(5, 15, reg, memory); 
     cout << "Memory[15] after store from register: " << memory.getcell(15) << endl;
-
+    reg.setcell(5, "4C"); 
+    cu.store(5, 0, reg, memory);
+    cout << "Memory[0] after store from register: " << memory.getcell(0) << endl;
+    
     
     reg.setcell(7, "5D"); 
     cu.move(7, 8, reg); 
