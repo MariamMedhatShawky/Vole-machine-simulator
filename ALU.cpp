@@ -8,12 +8,12 @@ using namespace std;
 
 class Register {
 public:
-    static const int size = 16;  // Size of the register
-    array<string, size> memory;   // Array to hold register values as strings
+    static const int size = 16;  
+    array<string, size> memory;   
 
     Register() {
         for (int i = 0; i < size; i++) {
-            memory[i] = "00";  // Initialize memory to "00"
+            memory[i] = "00"; 
         }
     }
 
@@ -50,7 +50,7 @@ public:
 
 class ALU {
 private:
-    Register reg;  // Link Register directly in ALU
+    Register reg;
 
 public:
     static int hexToDec(const string& hexStr) {
@@ -79,14 +79,14 @@ public:
     }
 };
 
-// Main function to test ALU and Register interaction
+
 int main() {
     ALU alu;
 
-    // Initialize some register cells
-    alu.add(0, 0, 0);  // Initial set to show it works with ALU as single unit
+   
+    alu.add(0, 0, 0); 
 
-    alu.displayRegister(0);  // Displaying content after addition
+    alu.displayRegister(0); 
 
     return 0;
 }
