@@ -3,6 +3,8 @@
 #include <array>
 #include <sstream>
 #include <cctype>
+#include <cmath> 
+
 
 using namespace std;
 
@@ -49,44 +51,67 @@ public:
 };
 
 class ALU {
-private:
-    Register reg;
+    Register& registerFile;
+
+    float hexToFloat(const string& hexValue) {
+        int binary = stoi(hexValue, nullptr, 16);
+
+        int sign = (binary >> 7) & 0x1;       
+        int exponent = (binary >> 4) & 0x7;   
+        int mantissa = binary & 0xF;         
+
+        // Convert to floating-point using the custom format
+        float value = (mantissa / 16.0f) * pow(2, exponent - 4);
+        if (sign == 1) value = -value;       
+
+        return value;
+    }
+
+    void addFloating(int index1, int index2, int dest) {
+        float num1 = hexToFloat(registerFile.getCell(index1));
+        float num2 = hexToFloat(registerFile.getCell(index2));
+        float sum = num1 + num2;
+
+        string resultHex = floatToHex(sum);
+        registerFile.setCell(dest, resultHex);
+    }
+
+    string floatToHex(float value) {
+        int sign = value < 0 ? 1 : 0;
+        value = fabs(value); 
+
+        int exponent = 4;
+        while (value >= 1.0f && exponent < 7) {
+            value /= 2;
+            exponent++;
+        }
+        while (value < 0.5f && exponent > 0) {
+            value *= 2;
+            exponent--;
+        }
+
+        int mantissa = static_cast<int>(value * 16) & 0xF;
+
+        int binary = (sign << 7) | (exponent << 4) | mantissa;
+
+        char hexStr[3];
+        snprintf(hexStr, 3, "%02X", binary);
+        return string(hexStr);
+    }
 
 public:
-    static int hexToDec(const string& hexStr) {
-        return stoi(hexStr, nullptr, 16);
-    }
-
-    static string decToHex(int decimalValue) {
-        stringstream ss;
-        ss << hex << uppercase << decimalValue;
-        return ss.str();
-    }
-
-    void add(int index1, int index2, int resultIndex) {
-        string hex1 = reg.getcell(index1);
-        string hex2 = reg.getcell(index2);
-
-        int value1 = hexToDec(hex1);
-        int value2 = hexToDec(hex2);
-
-        int result = value1 + value2;
-        reg.setcell(resultIndex, decToHex(result));
-    }
-
-    void displayRegister(int index) {
-        cout << "Value at register " << index << ": " << reg.getcell(index) << endl;
-    }
+    ALU(Register& reg) : registerFile(reg) {}
 };
 
-
 int main() {
-    ALU alu;
+    Register reg;
+    ALU alu(reg);
 
-   
-    alu.add(0, 0, 0); 
-
-    alu.displayRegister(0); 
+    reg.setCell(0, "A3");
+    reg.setCell(1, "4E");
+    alu.addFloating(0, 1, 2);
+    cout << "Result in register 2: " << reg.getCell(2) << endl;
 
     return 0;
 }
+
