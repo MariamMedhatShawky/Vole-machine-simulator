@@ -76,6 +76,10 @@ public:
         else if (opcode == '6')
         {
 
+            string r = to_string(reg);
+            string s = string(1, operand1);
+            string t = string(1, operand2);
+            alu.addRegistersFloat(r, s, t);
         }
         else if (opcode == 'B')
         {
