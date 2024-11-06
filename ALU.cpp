@@ -107,6 +107,21 @@ public:
         registerFile.setCell(R, decToHex(result));
     }
 };
+ void add(int index1, int index2, int resultIndex) {
+        string hex1 = reg.getcell(index1);
+        string hex2 = reg.getcell(index2);
+
+        int value1 = hexToDec(hex1);
+        int value2 = hexToDec(hex2);
+
+        int result = value1 + value2;
+        reg.setcell(resultIndex, decToHex(result));
+    }
+
+    void displayRegister(int index) {
+        cout << "Value at register " << index << ": " << reg.getcell(index) << endl;
+    }
+};
 
 int main() {
     Register reg;
